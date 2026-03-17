@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(npx:*)",
+      "Bash(mv CLAUDE.md /tmp/CLAUDE.md.bak)",
+      "Bash(mv .claude /tmp/.claude.bak)",
+      "Bash(mv docs:*)",
+      "Bash(mv .DS_Store /tmp/.DS_Store.bak)"
+    ]
+  }
+}
