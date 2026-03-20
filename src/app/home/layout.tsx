@@ -30,9 +30,7 @@ export default function HomeLayout({ children }: { children: React.ReactNode }) 
       <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur-lg">
         <div className="mx-auto flex h-14 max-w-2xl items-center justify-between px-4">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-              <House size={18} weight="duotone" className="text-primary" />
-            </div>
+            <img src="/logo.webp" alt="HOMI" className="h-8 w-8 rounded-lg object-contain" />
             <span className="text-sm font-bold tracking-tight">HOMI</span>
           </div>
 

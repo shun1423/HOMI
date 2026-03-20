@@ -14,6 +14,7 @@ import {
   Warehouse,
   BookOpen,
   Plant,
+  Plus,
 } from "@phosphor-icons/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -620,14 +621,28 @@ export default function BoardPage() {
   if (!spaces || spaces.length === 0) {
     return (
       <div className="mx-auto max-w-6xl px-4 py-6">
-        <div className="flex flex-col items-center gap-4 py-16">
-          <p className="text-lg font-semibold text-muted-foreground">
-            등록된 공간이 없습니다
-          </p>
-          <p className="text-sm text-muted-foreground">
-            공간을 추가하면 보드가 표시됩니다.
-          </p>
+        <div className="flex flex-col items-center gap-5 py-16">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
+            <GridFour size={32} weight="duotone" className="text-primary" />
+          </div>
+          <div className="text-center">
+            <p className="text-lg font-bold">공간을 추가해서 시작하세요</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              화장실, 거실, 부엌 등 공간을 만들고 항목을 관리할 수 있어요
+            </p>
+          </div>
+          <Button size="lg" onClick={() => setAddDialogOpen(true)} className="gap-2">
+            <Plus size={18} weight="bold" />
+            공간 추가
+          </Button>
         </div>
+
+        <RoomDialog
+          open={addDialogOpen}
+          onOpenChange={setAddDialogOpen}
+          onSave={handleCreateRoom}
+          title="방 추가"
+        />
       </div>
     );
   }

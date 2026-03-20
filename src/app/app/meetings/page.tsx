@@ -502,12 +502,12 @@ export default function MeetingsPage() {
             </p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => { window.location.href = `/api/zoom/auth?projectId=${useAppStore.getState().projectId}`; }} className="gap-1">
-              <VideoCamera size={14} /> Zoom 연결
+            <Button variant="outline" size="default" onClick={() => { window.location.href = `/api/zoom/auth?projectId=${useAppStore.getState().projectId}`; }}>
+              <VideoCamera weight="duotone" className="size-4" /> Zoom 연결
             </Button>
             <Button size="default" onClick={() => { setEditingMeeting(undefined); setFormOpen(true); }}>
-            <Plus weight="bold" className="size-4" /> 회의 추가
-          </Button>
+              <Plus weight="bold" className="size-4" /> 회의 추가
+            </Button>
           </div>
         </motion.div>
 

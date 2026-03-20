@@ -362,9 +362,7 @@ export default function AuthPage() {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="mb-8 flex flex-col items-center gap-3"
         >
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
-            <House size={28} weight="duotone" className="text-primary" />
-          </div>
+          <img src="/logo.webp" alt="HOMI" className="h-14 w-14 rounded-2xl object-contain" />
           <div className="text-center">
             <h1 className="text-xl font-bold tracking-tight">HOMI</h1>
             <p className="mt-1 text-sm text-muted-foreground">

@@ -163,29 +163,14 @@ export function useCreateProject() {
       input: Pick<Project, "name"> &
         Partial<Pick<Project, "description" | "address">>
     ) => {
-      const { data: project, error: projectError } = await supabase
-        .from("projects")
-        .insert(input)
-        .select()
-        .single();
-      if (projectError) throw projectError;
-
-      // Add current user as owner
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (user) {
-        const { error: memberError } = await supabase
-          .from("project_members")
-          .insert({
-            project_id: project.id,
-            user_id: user.id,
-            role: "owner",
-          });
-        if (memberError) throw memberError;
-      }
-
-      return project;
+      const { data, error } = await supabase
+        .rpc("create_project_with_owner", {
+          p_name: input.name,
+          p_description: input.description ?? null,
+          p_address: input.address ?? null,
+        });
+      if (error) throw error;
+      return data as unknown as Project;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.project });

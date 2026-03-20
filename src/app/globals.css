@@ -146,4 +146,13 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+  /* Pretendard 한글 vertical alignment 보정 */
+  [data-slot="button"],
+  [data-slot="badge"],
+  [data-slot="select-trigger"],
+  [data-slot="select-item"],
+  [data-slot="tabs-trigger"] {
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
 }

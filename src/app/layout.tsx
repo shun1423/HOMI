@@ -16,6 +16,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "HOMI",
   description: "터를 가꾸는 친구 · Home, I — AI 기반 인테리어 관리",
+  icons: {
+    icon: "/logo.webp",
+    apple: "/logo.webp",
+  },
 };
 
 export const viewport: Viewport = {

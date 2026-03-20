@@ -533,41 +533,37 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25, duration: 0.5 }}
-          className="space-y-2"
+          className="rounded-2xl border bg-card p-6 space-y-5"
         >
-          <Link href="/app/board">
-            <Card className="group cursor-pointer border-primary/20 bg-primary/5 transition-all hover:shadow-md">
-              <CardContent className="flex items-center gap-3 py-4">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10">
-                  <Kanban size={18} weight="duotone" className="text-primary" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium">방을 추가해서 시작하세요</p>
-                  <p className="text-xs text-muted-foreground">
-                    보드에서 공간을 만들고 항목을 관리할 수 있어요
-                  </p>
-                </div>
-                <ArrowRight
-                  size={16}
-                  className="shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1"
-                />
-              </CardContent>
-            </Card>
-          </Link>
+          <div className="text-center">
+            <h2 className="text-base font-bold">시작하기</h2>
+            <p className="text-xs text-muted-foreground mt-1">아래 단계를 따라 프로젝트를 설정해보세요</p>
+          </div>
 
-          <Card className="border-chart-2/20 bg-chart-2/5">
-            <CardContent className="flex items-center gap-3 py-4">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-chart-2/10">
-                <Lightbulb size={18} weight="duotone" className="text-chart-2" />
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Link href="/app/board">
+              <div className="group flex items-center gap-3 rounded-xl border p-4 transition-all hover:border-primary/30 hover:bg-primary/5 cursor-pointer">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+                  <Kanban size={20} weight="duotone" className="text-primary" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold">공간 추가</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">방을 만들고 항목을 관리하세요</p>
+                </div>
+                <ArrowRight size={14} className="shrink-0 text-muted-foreground/40 group-hover:text-primary transition-colors ml-auto" />
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium">AI 채팅으로 결정사항을 기록해보세요</p>
-                <p className="text-xs text-muted-foreground">
-                  화면 하단의 채팅 버튼을 눌러 AI와 대화할 수 있어요
-                </p>
+            </Link>
+
+            <div className="flex items-center gap-3 rounded-xl border p-4 bg-muted/30">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-chart-2/10">
+                <Lightbulb size={20} weight="duotone" className="text-chart-2" />
               </div>
-            </CardContent>
-          </Card>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold">AI 채팅</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">하단 버튼으로 결정사항을 기록하세요</p>
+              </div>
+            </div>
+          </div>
         </motion.div>
       )}
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import {
@@ -10,6 +10,8 @@ import {
   Plus,
   SpinnerGap,
   Buildings,
+  Trash,
+  MagnifyingGlass,
 } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -26,9 +28,10 @@ import {
 } from "@/components/ui/dialog";
 import { useUserProjects, useCreateProject } from "@/lib/queries";
 import { useAppStore } from "@/lib/store";
+import { createClient } from "@/lib/supabase/client";
 
 // ---------------------------------------------------------------------------
-// Create Project Dialog
+// Create Project Dialog (with Naver address search)
 // ---------------------------------------------------------------------------
 
 function CreateProjectDialog({
@@ -43,28 +46,44 @@ function CreateProjectDialog({
   const [address, setAddress] = useState("");
   const createProject = useCreateProject();
 
+  // Naver address search
+  const [addrQuery, setAddrQuery] = useState("");
+  const [addrResults, setAddrResults] = useState<{ name: string; address: string }[]>([]);
+  const [addrSearching, setAddrSearching] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    const q = addrQuery.trim();
+    if (q.length < 2) { setAddrResults([]); return; }
+    debounceRef.current = setTimeout(async () => {
+      setAddrSearching(true);
+      try {
+        const res = await fetch(`/api/places-search?query=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        setAddrResults((data.items ?? []).map((r: { name: string; address: string }) => ({ name: r.name, address: r.address })));
+      } catch { /* ignore */ }
+      finally { setAddrSearching(false); }
+    }, 300);
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  }, [addrQuery]);
+
   const handleSubmit = () => {
     if (!name.trim()) {
       toast.error("집 이름을 입력해주세요.");
       return;
     }
     createProject.mutate(
-      {
-        name: name.trim(),
-        address: address.trim() || undefined,
-      },
+      { name: name.trim(), address: address.trim() || undefined },
       {
         onSuccess: (project) => {
           toast.success(`"${project.name}" 프로젝트가 생성되었습니다.`);
           useAppStore.getState().setProjectId(project.id);
           onOpenChange(false);
-          setName("");
-          setAddress("");
+          setName(""); setAddress(""); setAddrQuery(""); setAddrResults([]);
           router.push("/app");
         },
-        onError: () => {
-          toast.error("프로젝트 생성에 실패했습니다.");
-        },
+        onError: () => toast.error("프로젝트 생성에 실패했습니다."),
       }
     );
   };
@@ -77,50 +96,58 @@ function CreateProjectDialog({
         </DialogHeader>
         <div className="space-y-4 py-2">
           <div className="space-y-2">
-            <Label htmlFor="project-name">집 이름</Label>
+            <Label htmlFor="project-name">집 이름 *</Label>
             <Input
               id="project-name"
-              placeholder="예: 포천 한옥, 서울 아파트..."
+              placeholder="포천 한옥, 서울 아파트..."
               value={name}
               onChange={(e) => setName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.nativeEvent.isComposing)
-                  handleSubmit();
-              }}
+              onKeyDown={(e) => { if (e.key === "Enter" && !e.nativeEvent.isComposing) handleSubmit(); }}
               autoFocus
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="project-address">주소 (선택)</Label>
+            <Label>주소 (선택)</Label>
             <div className="relative">
-              <MapPin
-                size={16}
-                weight="duotone"
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-              />
+              <MagnifyingGlass size={14} weight="duotone" className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <Input
-                id="project-address"
-                placeholder="예: 경기도 포천시..."
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                className="pl-9"
+                value={addrQuery}
+                onChange={(e) => setAddrQuery(e.target.value)}
+                placeholder="주소 검색 (예: 포천시 신읍동)"
+                className="pl-8"
               />
+              {addrSearching && <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[11px] text-muted-foreground">검색중...</span>}
             </div>
+            {addrResults.length > 0 && (
+              <div className="rounded-lg border divide-y max-h-32 overflow-y-auto">
+                {addrResults.map((r, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => { setAddress(r.address); setAddrResults([]); setAddrQuery(""); }}
+                    className="w-full text-left px-3 py-1.5 hover:bg-muted transition-colors"
+                  >
+                    <p className="text-xs font-medium truncate">{r.name}</p>
+                    <p className="text-[10px] text-muted-foreground truncate">{r.address}</p>
+                  </button>
+                ))}
+              </div>
+            )}
+            {address && (
+              <div className="flex items-center gap-2 bg-muted/50 rounded-md px-2.5 py-1.5">
+                <MapPin size={12} weight="duotone" className="text-muted-foreground shrink-0" />
+                <span className="text-xs truncate flex-1">{address}</span>
+                <button onClick={() => setAddress("")} className="text-muted-foreground hover:text-foreground shrink-0">
+                  <Trash size={10} />
+                </button>
+              </div>
+            )}
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            취소
-          </Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>취소</Button>
           <Button onClick={handleSubmit} disabled={createProject.isPending}>
-            {createProject.isPending ? (
-              <>
-                <SpinnerGap size={14} className="animate-spin" />
-                생성 중...
-              </>
-            ) : (
-              "추가"
-            )}
+            {createProject.isPending ? <><SpinnerGap size={14} className="animate-spin" /> 생성 중...</> : "추가"}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -129,23 +156,19 @@ function CreateProjectDialog({
 }
 
 // ---------------------------------------------------------------------------
-// Project Card
+// Project Card (with delete)
 // ---------------------------------------------------------------------------
 
 function ProjectCard({
   project,
   index,
   onClick,
+  onDelete,
 }: {
-  project: {
-    id: string;
-    name: string;
-    address: string | null;
-    space_count: number;
-    progress: number;
-  };
+  project: { id: string; name: string; address: string | null; space_count: number; progress: number };
   index: number;
   onClick: () => void;
+  onDelete: () => void;
 }) {
   return (
     <motion.div
@@ -153,10 +176,7 @@ function ProjectCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1 + index * 0.08, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
     >
-      <Card
-        className="group cursor-pointer transition-all hover:shadow-lg hover:ring-2 hover:ring-primary/20"
-        onClick={onClick}
-      >
+      <Card className="group cursor-pointer transition-all hover:shadow-lg hover:ring-2 hover:ring-primary/20" onClick={onClick}>
         <CardContent className="flex items-center gap-4 py-5">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10">
             <House size={24} weight="duotone" className="text-primary" />
@@ -176,22 +196,26 @@ function ProjectCard({
             <div className="mt-2 flex items-center gap-2">
               <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
                 <motion.div
-                  className="h-full rounded-full bg-gradient-to-r from-primary to-chart-1"
+                  className="h-full rounded-full bg-primary"
                   initial={{ width: 0 }}
                   animate={{ width: `${project.progress}%` }}
                   transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 + index * 0.08 }}
                 />
               </div>
-              <span className="text-xs font-semibold tabular-nums text-primary">
-                {project.progress}%
-              </span>
+              <span className="text-xs font-semibold tabular-nums text-primary">{project.progress}%</span>
             </div>
           </div>
-          <CaretRight
-            size={20}
-            weight="bold"
-            className="shrink-0 text-muted-foreground/40 transition-all group-hover:translate-x-1 group-hover:text-primary"
-          />
+          <div className="flex items-center gap-1 shrink-0">
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+              onClick={(e) => { e.stopPropagation(); onDelete(); }}
+            >
+              <Trash size={14} />
+            </Button>
+            <CaretRight size={20} weight="bold" className="text-muted-foreground/40 transition-all group-hover:translate-x-1 group-hover:text-primary" />
+          </div>
         </CardContent>
       </Card>
     </motion.div>
@@ -199,7 +223,7 @@ function ProjectCard({
 }
 
 // ---------------------------------------------------------------------------
-// Empty State
+// Empty / Loading
 // ---------------------------------------------------------------------------
 
 function EmptyState({ onAdd }: { onAdd: () => void }) {
@@ -228,10 +252,6 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
     </motion.div>
   );
 }
-
-// ---------------------------------------------------------------------------
-// Loading Skeleton
-// ---------------------------------------------------------------------------
 
 function ProjectsSkeleton() {
   return (
@@ -266,28 +286,35 @@ export default function HomePage() {
     router.push("/app");
   };
 
-  return (
-    <div className="space-y-8">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="space-y-1 text-center"
-      >
-        <h1 className="text-2xl font-bold tracking-tight">내 집 목록</h1>
-        <p className="text-sm text-muted-foreground">
-          터를 가꾸는 친구, HOMI
-        </p>
-      </motion.div>
+  const handleDeleteProject = async (projectId: string, projectName: string) => {
+    if (!confirm(`"${projectName}"을 삭제하시겠습니까? 모든 데이터가 삭제됩니다.`)) return;
+    const supabase = createClient();
+    const { error } = await supabase.from("projects").delete().eq("id", projectId);
+    if (error) { toast.error("삭제 실패"); return; }
+    toast.success(`"${projectName}"이 삭제되었습니다`);
+    window.location.reload();
+  };
 
-      {/* Content */}
-      {isLoading ? (
-        <ProjectsSkeleton />
-      ) : !projects || projects.length === 0 ? (
-        <EmptyState onAdd={() => setCreateOpen(true)} />
-      ) : (
-        <AnimatePresence mode="wait">
+  return (
+    <div className="min-h-screen bg-background px-4">
+      <div className="w-full max-w-lg mx-auto space-y-8 pt-8 pb-12">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="space-y-1 text-center"
+        >
+          <h1 className="text-2xl font-bold tracking-tight">내 집 목록</h1>
+          <p className="text-sm text-muted-foreground">터를 가꾸는 친구, HOMI</p>
+        </motion.div>
+
+        {/* Content */}
+        {isLoading ? (
+          <ProjectsSkeleton />
+        ) : !projects || projects.length === 0 ? (
+          <EmptyState onAdd={() => setCreateOpen(true)} />
+        ) : (
           <div className="space-y-3">
             {projects.map((project, index) => (
               <ProjectCard
@@ -295,17 +322,14 @@ export default function HomePage() {
                 project={project}
                 index={index}
                 onClick={() => handleSelectProject(project.id)}
+                onDelete={() => handleDeleteProject(project.id, project.name)}
               />
             ))}
 
-            {/* Add button */}
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{
-                delay: 0.1 + projects.length * 0.08,
-                duration: 0.4,
-              }}
+              transition={{ delay: 0.1 + projects.length * 0.08, duration: 0.4 }}
             >
               <button
                 onClick={() => setCreateOpen(true)}
@@ -316,11 +340,10 @@ export default function HomePage() {
               </button>
             </motion.div>
           </div>
-        </AnimatePresence>
-      )}
+        )}
 
-      {/* Create Dialog */}
-      <CreateProjectDialog open={createOpen} onOpenChange={setCreateOpen} />
+        <CreateProjectDialog open={createOpen} onOpenChange={setCreateOpen} />
+      </div>
     </div>
   );
 }

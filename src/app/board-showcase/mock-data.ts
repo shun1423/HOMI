@@ -383,6 +383,7 @@ export const MOCK_DOORS_WINDOWS: DoorWindow[] = [
 ];
 
 export function getProgress(items: BoardItem[]): number {
+  if (items.length === 0) return 0;
   const weights: Record<Status, number> = {
     undecided: 0,
     has_candidates: 25,

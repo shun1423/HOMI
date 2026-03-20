@@ -123,12 +123,10 @@ function ProjectSwitcher({ currentName }: { currentName?: string }) {
     <div className="relative px-3 pb-1">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-xs transition-colors hover:bg-accent"
+        className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-xs transition-colors hover:bg-accent"
       >
-        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-primary/10">
-          <House size={12} weight="duotone" className="text-primary" />
-        </div>
-        <span className="flex-1 truncate font-medium">
+        <House size={14} weight="duotone" className="shrink-0 text-primary" />
+        <span className="flex-1 truncate font-semibold text-[13px]">
           {currentName || "프로젝트 선택"}
         </span>
         <CaretUpDown size={12} className="shrink-0 text-muted-foreground" />
@@ -141,7 +139,7 @@ function ProjectSwitcher({ currentName }: { currentName?: string }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.15 }}
-            className="absolute left-3 right-3 top-full z-50 mt-1 rounded-lg border bg-popover p-1 shadow-lg"
+            className="absolute left-0 right-0 top-full z-50 mt-1 rounded-lg border bg-popover py-1 shadow-lg"
           >
             {(projects ?? []).map((p) => (
               <button
@@ -151,7 +149,7 @@ function ProjectSwitcher({ currentName }: { currentName?: string }) {
                   setOpen(false);
                   router.refresh();
                 }}
-                className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs transition-colors hover:bg-accent"
+                className="flex w-full items-center px-3 py-1.5 text-xs text-left transition-colors hover:bg-accent"
               >
                 <span className="flex-1 truncate">{p.name}</span>
                 {currentProjectId === p.id && (
@@ -165,9 +163,9 @@ function ProjectSwitcher({ currentName }: { currentName?: string }) {
                 setOpen(false);
                 router.push("/home");
               }}
-              className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              className="flex w-full items-center gap-2 px-3 py-2 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
             >
-              <House size={12} weight="duotone" />
+              <House size={12} weight="duotone" className="shrink-0" />
               홈으로
             </button>
           </motion.div>
@@ -196,9 +194,7 @@ function Sidebar({
     <aside className="fixed inset-y-0 left-0 z-40 hidden w-56 flex-col border-r bg-background md:flex">
       {/* Header — click to go home */}
       <Link href="/home" className="flex h-14 items-center gap-2.5 border-b px-4 transition-colors hover:bg-muted/50">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-          <House size={18} weight="duotone" className="text-primary" />
-        </div>
+        <img src="/logo.webp" alt="HOMI" className="h-8 w-8 rounded-lg object-contain" />
         <span className="text-sm font-bold tracking-tight">HOMI</span>
       </Link>
 

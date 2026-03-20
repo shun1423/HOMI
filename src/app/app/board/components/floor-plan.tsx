@@ -33,6 +33,7 @@ const GRID_SIZE = 20;
 const MIN_ROOM_SIZE = 60;
 const WALL_THICKNESS = 6;
 
+
 type Tool = "select" | "door" | "window";
 
 function snapToGrid(val: number) {
@@ -108,6 +109,7 @@ function FloorPlanRoom({
   const isMedium = !isSmall && (w < 200 || h < 180);
   const isLarge = !isSmall && !isMedium;
 
+
   const statusDotColors: Record<string, string> = {
     undecided: "#ccc",
     has_candidates: "#e5a200",
@@ -151,7 +153,7 @@ function FloorPlanRoom({
           ref={shapeRef}
           width={w}
           height={h}
-          fill={room.color + "12"}
+          fill={room.color + (progress > 75 ? "30" : progress > 50 ? "22" : progress > 25 ? "18" : "10")}
           stroke={isSelected ? room.color : "#9998"}
           strokeWidth={isSelected ? 2.5 : 1.5}
           cornerRadius={6}
@@ -183,17 +185,7 @@ function FloorPlanRoom({
         )}
 
         {isSmall && (
-          <Text
-            text={room.name}
-            x={0}
-            y={h / 2 - 7}
-            width={w}
-            align="center"
-            fontSize={11}
-            fontFamily="Pretendard Variable, system-ui"
-            fontStyle="600"
-            fill="#555"
-          />
+          <Text text={room.name} x={0} y={h / 2 - 7} width={w} align="center" fontSize={11} fontFamily="Pretendard Variable, system-ui" fontStyle="600" fill="#555" />
         )}
 
         {isMedium && (
