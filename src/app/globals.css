@@ -7,7 +7,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: "Pretendard Variable", var(--font-geist-sans), system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -38,6 +38,10 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -47,73 +51,87 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/*
+ * Color System: Warm earth tones inspired by Korean Hanok
+ * Primary: Warm stone (따뜻한 돌색)
+ * Accent: Dancheong red-brown (단청 갈색)
+ * Chart colors: Natural palette (자연 팔레트)
+ */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --background: oklch(0.985 0.002 75);
+  --foreground: oklch(0.175 0.012 75);
+  --card: oklch(0.995 0.001 75);
+  --card-foreground: oklch(0.175 0.012 75);
+  --popover: oklch(0.995 0.001 75);
+  --popover-foreground: oklch(0.175 0.012 75);
+  --primary: oklch(0.365 0.048 55);
+  --primary-foreground: oklch(0.985 0.002 75);
+  --secondary: oklch(0.955 0.008 75);
+  --secondary-foreground: oklch(0.265 0.02 55);
+  --muted: oklch(0.955 0.008 75);
+  --muted-foreground: oklch(0.505 0.02 75);
+  --accent: oklch(0.94 0.012 55);
+  --accent-foreground: oklch(0.265 0.02 55);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --success: oklch(0.62 0.17 145);
+  --success-foreground: oklch(0.985 0.002 75);
+  --warning: oklch(0.75 0.16 70);
+  --warning-foreground: oklch(0.25 0.04 75);
+  --border: oklch(0.905 0.01 75);
+  --input: oklch(0.905 0.01 75);
+  --ring: oklch(0.365 0.048 55);
+  --chart-1: #3B4B6B;
+  --chart-2: #8B6F4E;
+  --chart-3: #B8956A;
+  --chart-4: #9B8B7A;
+  --chart-5: #6B7B5E;
+  --radius: 0.75rem;
+  --sidebar: oklch(0.975 0.004 75);
+  --sidebar-foreground: oklch(0.175 0.012 75);
+  --sidebar-primary: oklch(0.365 0.048 55);
+  --sidebar-primary-foreground: oklch(0.985 0.002 75);
+  --sidebar-accent: oklch(0.94 0.012 55);
+  --sidebar-accent-foreground: oklch(0.265 0.02 55);
+  --sidebar-border: oklch(0.905 0.01 75);
+  --sidebar-ring: oklch(0.365 0.048 55);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --background: oklch(0.145 0.01 75);
+  --foreground: oklch(0.94 0.008 75);
+  --card: oklch(0.185 0.012 75);
+  --card-foreground: oklch(0.94 0.008 75);
+  --popover: oklch(0.185 0.012 75);
+  --popover-foreground: oklch(0.94 0.008 75);
+  --primary: oklch(0.78 0.06 55);
+  --primary-foreground: oklch(0.145 0.01 75);
+  --secondary: oklch(0.235 0.015 75);
+  --secondary-foreground: oklch(0.94 0.008 75);
+  --muted: oklch(0.235 0.015 75);
+  --muted-foreground: oklch(0.65 0.02 75);
+  --accent: oklch(0.265 0.02 55);
+  --accent-foreground: oklch(0.94 0.008 75);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
+  --success: oklch(0.62 0.17 145);
+  --success-foreground: oklch(0.145 0.01 75);
+  --warning: oklch(0.75 0.16 70);
+  --warning-foreground: oklch(0.175 0.012 75);
+  --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --ring: oklch(0.78 0.06 55);
+  --chart-1: #5B6B8B;
+  --chart-2: #AB8F6E;
+  --chart-3: #D8B58A;
+  --chart-4: #BBaB9A;
+  --chart-5: #8B9B7E;
+  --sidebar: oklch(0.165 0.012 75);
+  --sidebar-foreground: oklch(0.94 0.008 75);
+  --sidebar-primary: oklch(0.78 0.06 55);
+  --sidebar-primary-foreground: oklch(0.145 0.01 75);
+  --sidebar-accent: oklch(0.235 0.015 75);
+  --sidebar-accent-foreground: oklch(0.94 0.008 75);
+  --sidebar-border: oklch(1 0 0 / 12%);
+  --sidebar-ring: oklch(0.78 0.06 55);
 }
 
 @layer base {
@@ -125,5 +143,7 @@
   }
   html {
     @apply font-sans;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
