@@ -53,6 +53,7 @@ import {
   useCreateTask,
 } from "@/lib/queries";
 import { USER_MAP } from "@/lib/constants";
+import { useAppStore } from "@/lib/store";
 import type { Meeting, MeetingDecision, MeetingActionItem, MeetingStatus } from "@/types/database";
 
 // ---------------------------------------------------------------------------
@@ -141,7 +142,7 @@ function MeetingFormDialog({
       const res = await fetch("/api/meetings/zoom/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic: title, startTime: startISO, duration }),
+        body: JSON.stringify({ projectId: useAppStore.getState().projectId, topic: title, startTime: startISO, duration }),
       });
       const data = await res.json();
       if (data.error) {
@@ -292,7 +293,7 @@ function MeetingDetail({ meeting }: { meeting: Meeting }) {
       const meetingId = meeting.zoom_meeting_id ?? meeting.zoom_join_url?.match(/\/j\/(\d+)/)?.[1];
       if (!meetingId) { toast.error("Zoom 회의 ID를 찾을 수 없습니다"); return; }
 
-      const res = await fetch(`/api/meetings/zoom/recording?meetingId=${meetingId}`);
+      const res = await fetch(`/api/meetings/zoom/recording?meetingId=${meetingId}&projectId=${useAppStore.getState().projectId}`);
       const data = await res.json();
 
       if (data.recordingUrl) {
@@ -500,9 +501,14 @@ export default function MeetingsPage() {
               {meetings.length > 0 ? `예정 ${upcoming} · 완료 ${completed} · 총 ${meetings.length}` : "프로젝트 회의 관리"}
             </p>
           </div>
-          <Button size="default" onClick={() => { setEditingMeeting(undefined); setFormOpen(true); }}>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => { window.location.href = `/api/zoom/auth?projectId=${useAppStore.getState().projectId}`; }} className="gap-1">
+              <VideoCamera size={14} /> Zoom 연결
+            </Button>
+            <Button size="default" onClick={() => { setEditingMeeting(undefined); setFormOpen(true); }}>
             <Plus weight="bold" className="size-4" /> 회의 추가
           </Button>
+          </div>
         </motion.div>
 
         {/* Filter */}

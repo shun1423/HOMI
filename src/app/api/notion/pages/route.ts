@@ -1,26 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Client } from "@notionhq/client";
-import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function GET(request: NextRequest) {
-  const projectId = request.nextUrl.searchParams.get("projectId");
-  if (!projectId) {
-    return NextResponse.json({ error: "projectId 필요" }, { status: 400 });
-  }
-
-  const supabase = createAdminClient();
-  const { data: connection } = await supabase
-    .from("notion_connections")
-    .select("access_token")
-    .eq("project_id", projectId)
-    .single();
-
-  if (!connection?.access_token) {
-    return NextResponse.json({ error: "Notion 연결이 필요합니다" }, { status: 401 });
+  const apiKey = process.env.NOTION_API_KEY;
+  if (!apiKey) {
+    return NextResponse.json({ error: "Notion API 키가 설정되지 않았습니다" }, { status: 500 });
   }
 
   try {
-    const notion = new Client({ auth: connection.access_token });
+    const notion = new Client({ auth: apiKey });
 
     const response = await notion.search({
       filter: { property: "object", value: "page" },

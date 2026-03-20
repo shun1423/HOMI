@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Client } from "@notionhq/client";
-import { createAdminClient } from "@/lib/supabase/admin";
 
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 const MODEL = "anthropic/claude-sonnet-4";
 
-// Extract text content from Notion blocks
 async function getPageContent(notion: Client, pageId: string): Promise<string> {
   const blocks = await notion.blocks.children.list({ block_id: pageId, page_size: 100 });
   const texts: string[] = [];
@@ -24,36 +22,28 @@ async function getPageContent(notion: Client, pageId: string): Promise<string> {
 }
 
 export async function POST(request: NextRequest) {
-  const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey) {
+  const notionKey = process.env.NOTION_API_KEY;
+  const openrouterKey = process.env.OPENROUTER_API_KEY;
+
+  if (!notionKey) {
+    return NextResponse.json({ error: "Notion API 키 미설정" }, { status: 500 });
+  }
+  if (!openrouterKey) {
     return NextResponse.json({ error: "OpenRouter API 키 미설정" }, { status: 500 });
   }
 
   try {
-    const { projectId, pageIds, prompt } = await request.json() as {
-      projectId: string;
+    const { pageIds, prompt } = await request.json() as {
       pageIds: string[];
       prompt?: string;
     };
 
-    if (!projectId || !pageIds?.length) {
-      return NextResponse.json({ error: "projectId와 pageIds 필요" }, { status: 400 });
+    if (!pageIds?.length) {
+      return NextResponse.json({ error: "pageIds 필요" }, { status: 400 });
     }
 
-    const supabase = createAdminClient();
-    const { data: connection } = await supabase
-      .from("notion_connections")
-      .select("access_token")
-      .eq("project_id", projectId)
-      .single();
+    const notion = new Client({ auth: notionKey });
 
-    if (!connection?.access_token) {
-      return NextResponse.json({ error: "Notion 연결이 필요합니다" }, { status: 401 });
-    }
-
-    const notion = new Client({ auth: connection.access_token });
-
-    // Get content from all pages
     const contents: string[] = [];
     for (const pageId of pageIds.slice(0, 5)) {
       const content = await getPageContent(notion, pageId);
@@ -85,7 +75,7 @@ ${contents.join("\n\n---\n\n")}
     const res = await fetch(OPENROUTER_URL, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Bearer ${openrouterKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
